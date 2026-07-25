@@ -1,0 +1,47 @@
+{
+    "name": "node-red-standards",
+    "version": "0.1.0",
+    "description": "Tool-neutral standard (rules + templates + CLI) for windkh Node-RED node repositories.",
+    "type": "module",
+    "bin": {
+        "nrstd": "bin/nrstd.mjs"
+    },
+    "files": [
+        "bin/",
+        "lib/",
+        "templates/",
+        "doc/",
+        "AGENTS.md",
+        "README.md",
+        "LICENSE",
+        "!templates/.mocharc.json"
+    ],
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/windkh/node-red-standards.git"
+    },
+    "bugs": {
+        "url": "https://github.com/windkh/node-red-standards/issues"
+    },
+    "homepage": "https://github.com/windkh/node-red-standards#readme",
+    "keywords": [
+        "node-red",
+        "standards",
+        "scaffold",
+        "audit",
+        "eslint",
+        "prettier",
+        "node-test"
+    ],
+    "scripts": {
+        "standards:audit": "node bin/nrstd.mjs audit",
+        "standards:sync": "node bin/nrstd.mjs sync",
+        "standards:scaffold": "node bin/nrstd.mjs scaffold",
+        "standards:migrate-tests": "node bin/nrstd.mjs migrate-tests"
+    },
+    "license": "MIT",
+    "author": "Karl-Heinz Wind"
+}

@@ -1,0 +1,41 @@
+# Runs in the standards repo. Weekly, checks out each target repo, runs `nrstd sync --write`
+# and opens a PR with any drift corrections. Fill in the repo list.
+name: Roll out standard
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+jobs:
+  rollout:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo:
+          - windkh/node-red-contrib-telegrambot
+          - windkh/node-red-contrib-shelly
+          - windkh/node-red-contrib-grohe-sense
+          - windkh/node-red-contrib-ntrip
+          - windkh/node-red-contrib-vallox
+          - windkh/node-red-node-telegrambot
+    steps:
+      - name: Checkout standards
+        uses: actions/checkout@v4
+        with: { path: standards }
+      - name: Checkout target
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          path: target
+          token: ${{ secrets.ROLLOUT_TOKEN }}
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x }
+      - name: Apply standard
+        run: node standards/bin/nrstd.mjs sync target --write
+      - name: Open PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: target
+          token: ${{ secrets.ROLLOUT_TOKEN }}
+          branch: chore/standards-sync
+          title: 'chore: sync repo to shared standard'
+          commit-message: 'chore: sync repo to shared standard'
