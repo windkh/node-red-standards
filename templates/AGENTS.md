@@ -33,4 +33,4 @@
 - Never bump the major version without an ADR explaining the breaking change.
 
 ## Shared: package.json scripts
-`lint`, `lint:fix`, `format`, `format:check`, `test` (`node --test`), `coverage` (`c8 node --test`), `coverage:check`.
+`lint`, `lint:fix`, `format`, `format:check`, `test` (`node --test` with `--test-force-exit --test-timeout=30000 --test-concurrency=1`, no path args), `coverage` / `coverage:check` (c8 over `npm test`).
