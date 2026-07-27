@@ -1,0 +1,26 @@
+# Runs in the standards repo. Guards the invariant that `nrstd sync` output is already
+# Prettier-clean under the Prettier config the standard itself ships.
+#
+# Why this exists: templates/ is copied verbatim into target repos, and those repos run
+# `prettier --check .` in CI. A template that is not Prettier-clean therefore turns every
+# target repo red, and the managed AGENTS.md block cannot even be fixed locally — the next
+# `nrstd sync` reverts it. The failure surfaces in six downstream repos instead of here.
+name: Templates are Prettier-clean
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    prettier:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20.x
+            # Pinned to the major the standard requires of its targets (prettier ^3).
+            - run: npx --yes prettier@3 --config templates/.prettierrc.json --check "templates/**"
