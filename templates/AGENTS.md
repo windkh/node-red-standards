@@ -29,7 +29,7 @@
   hypothetical future changes to code you control. Validate input at the boundary and then trust it.
 
 ## Shared: Tests
-- Node's built-in test runner (`node --test`) + `node-red-node-test-helper`. Tests live in `test/` as `*.test.js`.
+- Node's built-in test runner (`node --test`) + `node-red-node-test-helper`. Tests live in `test/` as `*.test.js`; the test script scopes discovery to `node --test 'test/**/*.test.js'` so fixtures are not run as tests.
   Import `{ describe, it }` from `node:test` and assert with `node:assert`. Coverage via `c8`.
 
 ## Shared: Documentation

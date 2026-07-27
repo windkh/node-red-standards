@@ -9,3 +9,8 @@
   The built-in `--experimental-test-coverage` is intentionally not used while it is still experimental.
 - **Flaky integration tests.** `node --test` has no retry; keep helper-based tests deterministic
   (fixed ports off, await teardown) rather than relying on retries.
+
+## Fixtures / helpers
+- `node --test` with no args loads **every** `.js` file under `test/` (including fixtures) and runs it.
+- Therefore the standard test script scopes discovery: `node --test 'test/**/*.test.js'` (Node >= 21). Fixtures/helpers that are not `*.test.js` are then ignored.
+- On Node 20 (no glob support in `--test`), keep non-test helpers OUT of `test/` (e.g. `test-fixtures/`).
