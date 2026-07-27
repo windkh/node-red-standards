@@ -7,6 +7,17 @@ Rationale and detail behind the enforceable rules in `templates/AGENTS.md`.
 - **Entry file.** `<pkg>/99-<name>.js` only registers node types. No business logic.
 - **ESLint flat config.** Use `eslint.config.js` with `@eslint/js` recommended + `eslint-config-prettier`.
   Warnings for style, errors for correctness (`no-empty` with `allowEmptyCatch`, etc.).
+- **ESLint >= 10, and `eslint` / `@eslint/js` on the same major.** `@eslint/js@10` declares a peer on
+  `eslint@^10`, so bumping only `@eslint/js` fails to install; bumping only `eslint` installs fine but
+  keeps the v9 recommended set, because that set comes from `@eslint/js`. The two therefore have to
+  move in one commit — split across two dependabot PRs they can each pass CI while the pair is red.
+  Note ESLint 10 itself needs Node `^20.19.0 || ^22.13.0 || >=24`, stricter than the `>=20.0.0` a
+  package must support at runtime; it is a devDependency, so this binds contributors, not consumers.
+- **Two rules arrive with ESLint 10's recommended set**, both as errors:
+    - `no-unassigned-vars` — a binding that is read but never assigned is always `undefined`. The
+      common source is declaring `let data; let params;` purely to pass `undefined` into a call that
+      takes optional arguments. Pass the argument, or leave it out.
+    - `no-useless-assignment` — a value no later statement reads. Usually a leftover from a refactor.
 - **Prettier.** 4-space indent, single quotes, es5 trailing commas, printWidth 120.
 - **Node engine.** `>=20.0.0`.
 - **No `var`.** Use `const` by default and `let` only when a binding is reassigned. `var`'s

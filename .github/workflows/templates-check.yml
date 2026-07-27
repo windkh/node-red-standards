@@ -23,4 +23,6 @@ jobs:
               with:
                   node-version: 20.x
             # Pinned to the major the standard requires of its targets (prettier ^3).
-            - run: npx --yes prettier@3 --config templates/.prettierrc.json --check "templates/**"
+            # --ignore-unknown: templates/ also holds files Prettier has no parser for
+            # (.gitattributes), and without it those abort the run instead of being skipped.
+            - run: npx --yes prettier@3 --config templates/.prettierrc.json --ignore-unknown --check "templates/**"

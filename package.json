@@ -1,6 +1,6 @@
 {
     "name": "node-red-standards",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "Tool-neutral standard (rules + templates + CLI) for windkh Node-RED node repositories.",
     "type": "module",
     "bin": {
