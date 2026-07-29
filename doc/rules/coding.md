@@ -26,22 +26,26 @@ Rationale and detail behind the enforceable rules in `templates/AGENTS.md`.
 - **One statement per line.** Don't chain several instructions on one line (e.g. `a(); b();` or
   an assignment plus a call). One statement per line keeps diffs, stack traces, and breakpoints
   meaningful and the code scannable. Enforced by `max-statements-per-line` (max 1, warn).
-- **Short functions, read in order of likelihood.** Four rules that work together; there is no core
-  ESLint rule for any of them, so they are enforced by code review.
-    - **Preconditions first.** Validate arguments at the top and leave at once — `throw` when the
-      caller is code, or call the error path when the caller is a Node-RED flow. Getting this out of
-      the way in one place is what lets the rest of the function assume valid input.
-    - **Most likely case next.** The happy path belongs immediately after the preconditions. Putting
-      rare branches first forces every reader to scroll past cases that almost never happen before
-      learning what the function actually does. This is the reason the older "single exit
-      everywhere" phrasing was dropped: taken literally it pushes the happy path to the bottom, or
-      turns a flat sequence of guards into a pyramid.
-    - **One exit from the body.** Once real work has begun, don't return from the middle of it.
-      Assign to one result and return it last, so the returned value is obvious at a glance.
+- **Short functions, one exit.** Five rules that work together; there is no core ESLint rule for any
+  of them, so they are enforced by code review.
+    - **One exit per function.** A function leaves in exactly one place: its last statement. This
+      includes guard clauses — an early `return` in a precondition check is still a second exit and is
+      not allowed. Assign to one result and return it last, so the returned value is obvious at a
+      glance. `throw` is the one permitted exception: it is not a return, it is unmistakable at the
+      call site, and a `finally` still runs.
+    - **Validate by nesting, not by leaving.** State the precondition as the condition that must
+      hold, put the work inside it, and put the error path in the `else`. Where the caller is code,
+      `throw` instead. Where the caller is a Node-RED flow, the `else` calls the error path — a flow
+      must be told what went wrong, so there is always somewhere for it to go.
+    - **Keep functions short enough that the nesting does not matter.** The usual objection to
+      nesting is really an objection to long functions. In a function short enough to take in at a
+      glance, one or two levels of indentation cost nothing at all. When the nesting does start to
+      hurt, that is the signal to extract a function — never to add a second exit.
+    - **Most likely case first within each branch.** Lead with what the function normally does and
+      put the rare case in the `else`, so a reader meets the purpose before the exceptions.
     - **Trailing work belongs in `finally`.** If every path must log, clear a status or release
-      something, put it in `finally` rather than before each exit. An exit that skips the epilogue is
-      the actual defect the single-exit rule was reaching for; `finally` prevents it without
-      constraining control flow.
+      something, put it in `finally` rather than repeating it before each exit. Combined with the
+      single exit this makes the epilogue unskippable.
 - **No defensive programming.** Don't test for states that cannot occur, and don't guard against
   hypothetical future changes to code you own — a `if (!alreadyHandled)` around code that cannot be
   reached is dead weight that later readers must still reason about. Validate at the boundary, then
